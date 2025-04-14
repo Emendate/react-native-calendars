@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import {formatNumbers, weekDayNames} from '../../dateutils';
 import styleConstructor from './style';
+import {CustomHeaderStyle} from './customStyle';
 import {Theme, Direction} from '../../types';
 
 export interface CalendarHeaderProps {
@@ -296,12 +297,14 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
       onLayout={onHeaderLayout}
     >
       <View style={headerStyle}>
-        {_renderArrow('left')}
         <View style={style.current.headerContainer}>
           {_renderHeader()}
           {renderIndicator()}
         </View>
-        {_renderArrow('right')}
+        <View style={CustomHeaderStyle.headerArrowContainer}>
+          {_renderArrow('left')}
+          {_renderArrow('right')}
+        </View>
       </View>
       {renderDayNames()}
     </View>
