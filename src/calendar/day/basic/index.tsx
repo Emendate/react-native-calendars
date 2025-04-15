@@ -1,10 +1,14 @@
 import React, {Fragment, useCallback, useRef} from 'react';
-import {TouchableOpacity, Text, View, ViewProps} from 'react-native';
+import {TouchableOpacity, Text, View, ViewProps, ViewStyle, TextStyle} from 'react-native';
 import {xdateToData} from '../../../interface';
 import {Theme, DayState, MarkingTypes, DateData} from '../../../types';
 import Marking, {MarkingProps} from '../marking';
 import styleConstructor from './style';
 
+type DayStateStyle = {
+  container?: ViewStyle;
+  text?: TextStyle;
+};
 
 export interface BasicDayProps extends ViewProps {
   /** Theme object */
@@ -29,6 +33,8 @@ export interface BasicDayProps extends ViewProps {
   accessibilityLabel?: string;
   /** Test ID */
   testID?: string;
+  /** Custom Day Style*/
+  customDayStyle?: Partial<Record<DayState, DayStateStyle>>
 }
 
 const BasicDay = (props: BasicDayProps) => {
@@ -44,7 +50,8 @@ const BasicDay = (props: BasicDayProps) => {
     disableAllTouchEventsForInactiveDays,
     accessibilityLabel,
     children,
-    testID
+    customDayStyle,
+    testID,
   } = props;
   const dateData = date ? xdateToData(date) : undefined;
   const style = useRef(styleConstructor(theme));
@@ -73,31 +80,39 @@ const BasicDay = (props: BasicDayProps) => {
   };
 
   const getContainerStyle = () => {
-    const {customStyles, selectedColor} = _marking;
+    const {customStyles: markingCustomStyles, selectedColor} = _marking;
     const styles = [style.current.base];
 
-    if (isSelected) {
+    if (isToday) {
+      styles.push(style.current.today);
+      styles.push(customDayStyle?.today?.container);
+    } else if (isSelected) {
       styles.push(style.current.selected);
       if (selectedColor) {
         styles.push({backgroundColor: selectedColor});
       }
-    } else if (isToday) {
-      styles.push(style.current.today);
+      styles.push(customDayStyle?.selected?.container);
+    } else if (isInactive) {
+      styles.push(customDayStyle?.inactive?.container)
+    } else if (isDisabled) {
+      styles.push(customDayStyle?.disabled?.container)
     }
-
+    
     //Custom marking type
-    if (isCustom && customStyles && customStyles.container) {
-      if (customStyles.container.borderRadius === undefined) {
-        customStyles.container.borderRadius = 16;
+    if (isCustom && markingCustomStyles && markingCustomStyles.container) {
+      if (markingCustomStyles.container.borderRadius === undefined) {
+        markingCustomStyles.container.borderRadius = 16;
       }
-      styles.push(customStyles.container);
+      styles.push(markingCustomStyles.container);
     }
+    
+    styles.push(customDayStyle?.['']?.container)
 
     return styles;
   };
 
   const getTextStyle = () => {
-    const {customStyles, selectedTextColor} = _marking;
+    const {customStyles: markingCustomStyles, selectedTextColor} = _marking;
     const styles = [style.current.text];
 
     if (isSelected) {
@@ -105,19 +120,24 @@ const BasicDay = (props: BasicDayProps) => {
       if (selectedTextColor) {
         styles.push({color: selectedTextColor});
       }
+      styles.push(customDayStyle?.selected?.text)
     } else if (isDisabled) {
       styles.push(style.current.disabledText);
+      styles.push(customDayStyle?.disabled?.text)
     } else if (isToday) {
       styles.push(style.current.todayText);
+      styles.push(customDayStyle?.today?.text)
     } else if (isInactive) {
       styles.push(style.current.inactiveText);
+      styles.push(customDayStyle?.inactive?.text)
     }
 
     // Custom marking type
-    if (isCustom && customStyles && customStyles.text) {
-      styles.push(customStyles.text);
+    if (isCustom && markingCustomStyles && markingCustomStyles.text) {
+      styles.push(markingCustomStyles.text);
     }
 
+    styles.push(customDayStyle?.['']?.text)
     return styles;
   };
 
