@@ -1,3 +1,5 @@
+import { DateData } from "./types";
+
 const XDate = require('xdate');
 
 export function padNumber(n: number) {
@@ -17,6 +19,18 @@ export function xdateToData(date: XDate | string) {
     timestamp: new XDate(dateString, true).getTime(),
     dateString: dateString
   };
+}
+
+export function checkIsToday(date?: DateData): boolean {
+  if(!date) return false;
+  
+  const today = xdateToData(new XDate());
+
+  return (
+    date.year === today.year &&
+    date.month === today.month &&
+    date.day === today.day
+  );
 }
 
 export function parseDate(d?: any) {

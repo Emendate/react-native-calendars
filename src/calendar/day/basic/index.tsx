@@ -1,6 +1,6 @@
 import React, {Fragment, useCallback, useRef} from 'react';
 import {TouchableOpacity, Text, View, ViewProps, ViewStyle, TextStyle} from 'react-native';
-import {xdateToData} from '../../../interface';
+import {checkIsToday, xdateToData} from '../../../interface';
 import {Theme, DayState, MarkingTypes, DateData} from '../../../types';
 import Marking, {MarkingProps} from '../marking';
 import styleConstructor from './style';
@@ -60,7 +60,7 @@ const BasicDay = (props: BasicDayProps) => {
   const isSelected = _marking.selected || state === 'selected';
   const isDisabled = typeof _marking.disabled !== 'undefined' ? _marking.disabled : state === 'disabled';
   const isInactive = typeof marking?.inactive !== 'undefined' ? marking.inactive : state === 'inactive';
-  const isToday = typeof marking?.today !== 'undefined' ? marking.today : state === 'today';
+  const isToday = typeof marking?.today !== 'undefined' ? marking.today : checkIsToday(dateData) ? true : state === 'today';
   const isMultiDot = markingType === Marking.markings.MULTI_DOT;
   const isMultiPeriod = markingType === Marking.markings.MULTI_PERIOD;
   const isCustom = markingType === Marking.markings.CUSTOM;
@@ -92,10 +92,10 @@ const BasicDay = (props: BasicDayProps) => {
         styles.push({backgroundColor: selectedColor});
       }
       styles.push(customDayStyle?.selected?.container);
-    } else if (isInactive) {
-      styles.push(customDayStyle?.inactive?.container)
     } else if (isDisabled) {
       styles.push(customDayStyle?.disabled?.container)
+    } else {
+      styles.push(customDayStyle?.inactive?.container)
     }
     
     //Custom marking type
