@@ -243,7 +243,7 @@ const CalendarHeader = forwardRef((props: CalendarHeaderProps, ref) => {
         onPress={onPress}
         disabled={shouldDisable}
         style={style.current.arrow}
-        hitSlop={hitSlop}
+        // hitSlop={hitSlop}
         testID={`${testID}.${arrowId}`}
       >
         {renderArrow ? (
