@@ -3,6 +3,7 @@ import * as defaultStyle from '../style';
 import {Theme} from '../types';
 import constants from '../commons/constants';
 
+export const HEADER_HEIGHT = 68;
 export const KNOB_CONTAINER_HEIGHT = 24;
 
 export default function styleConstructor(theme: Theme = {}) {
@@ -92,7 +93,8 @@ export default function styleConstructor(theme: Theme = {}) {
     weekContainer: {
       position: 'absolute',
       left: 0,
-      right: 0
+      right: 0,
+      top: HEADER_HEIGHT + (constants.isAndroid ? 8 : 9) // align row on top of calendar's first row
     },
     hidden: {
       opacity: 0

@@ -1,10 +1,14 @@
 import React, {Fragment, useCallback, useRef} from 'react';
-import {TouchableOpacity, Text, View, ViewProps} from 'react-native';
-import {xdateToData} from '../../../interface';
+import {TouchableOpacity, Text, View, ViewProps, ViewStyle, TextStyle} from 'react-native';
+import {checkIsToday, xdateToData} from '../../../interface';
 import {Theme, DayState, MarkingTypes, DateData} from '../../../types';
 import Marking, {MarkingProps} from '../marking';
 import styleConstructor from './style';
 
+type DayStateStyle = {
+  container?: ViewStyle;
+  text?: TextStyle;
+};
 
 export interface BasicDayProps extends ViewProps {
   /** Theme object */
@@ -29,6 +33,8 @@ export interface BasicDayProps extends ViewProps {
   accessibilityLabel?: string;
   /** Test ID */
   testID?: string;
+  /** Custom Day Style*/
+  customDayStyle?: Partial<Record<DayState, DayStateStyle>>;
 }
 
 const BasicDay = (props: BasicDayProps) => {
@@ -44,6 +50,7 @@ const BasicDay = (props: BasicDayProps) => {
     disableAllTouchEventsForInactiveDays,
     accessibilityLabel,
     children,
+    customDayStyle,
     testID
   } = props;
   const dateData = date ? xdateToData(date) : undefined;
@@ -53,7 +60,8 @@ const BasicDay = (props: BasicDayProps) => {
   const isSelected = _marking.selected || state === 'selected';
   const isDisabled = typeof _marking.disabled !== 'undefined' ? _marking.disabled : state === 'disabled';
   const isInactive = typeof marking?.inactive !== 'undefined' ? marking.inactive : state === 'inactive';
-  const isToday = typeof marking?.today !== 'undefined' ? marking.today : state === 'today';
+  const isToday =
+    typeof marking?.today !== 'undefined' ? marking.today : checkIsToday(dateData) ? true : state === 'today';
   const isMultiDot = markingType === Marking.markings.MULTI_DOT;
   const isMultiPeriod = markingType === Marking.markings.MULTI_PERIOD;
   const isCustom = markingType === Marking.markings.CUSTOM;
@@ -76,13 +84,19 @@ const BasicDay = (props: BasicDayProps) => {
     const {customStyles, selectedColor} = _marking;
     const styles = [style.current.base];
 
-    if (isSelected) {
+    if (isToday) {
+      styles.push(style.current.today);
+      styles.push(customDayStyle?.today?.container);
+    } else if (isSelected) {
       styles.push(style.current.selected);
       if (selectedColor) {
         styles.push({backgroundColor: selectedColor});
       }
-    } else if (isToday) {
-      styles.push(style.current.today);
+      styles.push(customDayStyle?.selected?.container);
+    } else if (isDisabled) {
+      styles.push(customDayStyle?.disabled?.container);
+    } else {
+      styles.push(customDayStyle?.inactive?.container);
     }
 
     //Custom marking type
@@ -92,6 +106,8 @@ const BasicDay = (props: BasicDayProps) => {
       }
       styles.push(customStyles.container);
     }
+
+    styles.push(customDayStyle?.['']?.container);
 
     return styles;
   };
@@ -105,12 +121,16 @@ const BasicDay = (props: BasicDayProps) => {
       if (selectedTextColor) {
         styles.push({color: selectedTextColor});
       }
+      styles.push(customDayStyle?.selected?.text);
     } else if (isDisabled) {
       styles.push(style.current.disabledText);
+      styles.push(customDayStyle?.disabled?.text);
     } else if (isToday) {
       styles.push(style.current.todayText);
+      styles.push(customDayStyle?.today?.text);
     } else if (isInactive) {
       styles.push(style.current.inactiveText);
+      styles.push(customDayStyle?.inactive?.text);
     }
 
     // Custom marking type
@@ -118,6 +138,7 @@ const BasicDay = (props: BasicDayProps) => {
       styles.push(customStyles.text);
     }
 
+    styles.push(customDayStyle?.['']?.text);
     return styles;
   };
 
