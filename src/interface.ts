@@ -1,4 +1,4 @@
-import { DateData } from "./types";
+import {DateData} from './types';
 
 const XDate = require('xdate');
 
@@ -22,8 +22,8 @@ export function xdateToData(date: XDate | string) {
 }
 
 export function checkIsToday(date?: DateData): boolean {
-  if(!date) return false;
-  
+  if (!date) return false;
+
   const today = xdateToData(new XDate());
 
   return (

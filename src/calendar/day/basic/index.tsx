@@ -34,7 +34,7 @@ export interface BasicDayProps extends ViewProps {
   /** Test ID */
   testID?: string;
   /** Custom Day Style*/
-  customDayStyle?: Partial<Record<DayState, DayStateStyle>>
+  customDayStyle?: Partial<Record<DayState, DayStateStyle>>;
 }
 
 const BasicDay = (props: BasicDayProps) => {
@@ -51,7 +51,7 @@ const BasicDay = (props: BasicDayProps) => {
     accessibilityLabel,
     children,
     customDayStyle,
-    testID,
+    testID
   } = props;
   const dateData = date ? xdateToData(date) : undefined;
   const style = useRef(styleConstructor(theme));
@@ -60,7 +60,8 @@ const BasicDay = (props: BasicDayProps) => {
   const isSelected = _marking.selected || state === 'selected';
   const isDisabled = typeof _marking.disabled !== 'undefined' ? _marking.disabled : state === 'disabled';
   const isInactive = typeof marking?.inactive !== 'undefined' ? marking.inactive : state === 'inactive';
-  const isToday = typeof marking?.today !== 'undefined' ? marking.today : checkIsToday(dateData) ? true : state === 'today';
+  const isToday =
+    typeof marking?.today !== 'undefined' ? marking.today : checkIsToday(dateData) ? true : state === 'today';
   const isMultiDot = markingType === Marking.markings.MULTI_DOT;
   const isMultiPeriod = markingType === Marking.markings.MULTI_PERIOD;
   const isCustom = markingType === Marking.markings.CUSTOM;
@@ -80,7 +81,7 @@ const BasicDay = (props: BasicDayProps) => {
   };
 
   const getContainerStyle = () => {
-    const {customStyles: markingCustomStyles, selectedColor} = _marking;
+    const {customStyles, selectedColor} = _marking;
     const styles = [style.current.base];
 
     if (isToday) {
@@ -93,26 +94,26 @@ const BasicDay = (props: BasicDayProps) => {
       }
       styles.push(customDayStyle?.selected?.container);
     } else if (isDisabled) {
-      styles.push(customDayStyle?.disabled?.container)
+      styles.push(customDayStyle?.disabled?.container);
     } else {
-      styles.push(customDayStyle?.inactive?.container)
+      styles.push(customDayStyle?.inactive?.container);
     }
-    
+
     //Custom marking type
-    if (isCustom && markingCustomStyles && markingCustomStyles.container) {
-      if (markingCustomStyles.container.borderRadius === undefined) {
-        markingCustomStyles.container.borderRadius = 16;
+    if (isCustom && customStyles && customStyles.container) {
+      if (customStyles.container.borderRadius === undefined) {
+        customStyles.container.borderRadius = 16;
       }
-      styles.push(markingCustomStyles.container);
+      styles.push(customStyles.container);
     }
-    
-    styles.push(customDayStyle?.['']?.container)
+
+    styles.push(customDayStyle?.['']?.container);
 
     return styles;
   };
 
   const getTextStyle = () => {
-    const {customStyles: markingCustomStyles, selectedTextColor} = _marking;
+    const {customStyles, selectedTextColor} = _marking;
     const styles = [style.current.text];
 
     if (isSelected) {
@@ -120,24 +121,24 @@ const BasicDay = (props: BasicDayProps) => {
       if (selectedTextColor) {
         styles.push({color: selectedTextColor});
       }
-      styles.push(customDayStyle?.selected?.text)
+      styles.push(customDayStyle?.selected?.text);
     } else if (isDisabled) {
       styles.push(style.current.disabledText);
-      styles.push(customDayStyle?.disabled?.text)
+      styles.push(customDayStyle?.disabled?.text);
     } else if (isToday) {
       styles.push(style.current.todayText);
-      styles.push(customDayStyle?.today?.text)
+      styles.push(customDayStyle?.today?.text);
     } else if (isInactive) {
       styles.push(style.current.inactiveText);
-      styles.push(customDayStyle?.inactive?.text)
+      styles.push(customDayStyle?.inactive?.text);
     }
 
     // Custom marking type
-    if (isCustom && markingCustomStyles && markingCustomStyles.text) {
-      styles.push(markingCustomStyles.text);
+    if (isCustom && customStyles && customStyles.text) {
+      styles.push(customStyles.text);
     }
 
-    styles.push(customDayStyle?.['']?.text)
+    styles.push(customDayStyle?.['']?.text);
     return styles;
   };
 
